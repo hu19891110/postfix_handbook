@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>11. Advanced Setup - Postfix - Outbound Server</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "11. Advanced Setup";
+    var mkdocs_page_input_path = "advanced_setup.md";
+    var mkdocs_page_url = "/advanced_setup/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Postfix - Outbound Server</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">About</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../installation/">1. Installation</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../dkim_spf/">2. DKIM and SPF</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../domainkeys/">3. DomainKeys</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../opendmarc/">4. Open DMARC</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../bounce/">5. Bounce Management</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../rate_limiting/">6. Rate Limiting</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../ip_rotating/">7. IP Rotating</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../authentication/">8. Authentication</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../multidomain/">9. Multidomain</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../whitelisting/">10. Whitelisting</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">11. Advanced Setup</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#load-balancing-with-haproxy">load balancing with HAProxy</a></li>
+    
+
+    <li class="toctree-l2"><a href="#security">SECURITY</a></li>
+    
+
+    <li class="toctree-l2"><a href="#test">Test</a></li>
+    
+
+    <li class="toctree-l2"><a href="#install-local-dns-server">Install Local DNS server</a></li>
+    
+
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../monitoring/">12. Monitoring</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../conclusion/">13. Conlusion and Tips</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Postfix - Outbound Server</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>11. Advanced Setup</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h2 id="load-balancing-with-haproxy">load balancing with HAProxy<a class="headerlink" href="#load-balancing-with-haproxy" title="Permanent link">&para;</a></h2>
+<p>For SMTP, it is really important to know the client IP, since we use it most of the time through RBL to fight spam.
+For security purpose as well: we may want to allow only some hosts to use our SMTP relays and block any other clients.
+Without the proxy protocol, the load-balancer will hide the client IP with its own IP. You would have to maintain whitelists into the load-balancer (which is doable). Thanks to proxy protocol, Postscreen would be aware of the client IP, it means you could maintain lists directly into the MTA.</p>
+<h2 id="security">SECURITY<a class="headerlink" href="#security" title="Permanent link">&para;</a></h2>
+<p>To see if an outsider can reach you, run this command:</p>
+<pre><code>telnet relay-test.mail-abuse.org
+host relay-test.mail-abuse.org
+</code></pre>
+<p>When you make this connection, relay-test.mail-abuse.org performs an online relay test of the machine that made the connection. If your ISP (or your own firewall) doesn&rsquo;t block incoming connections to your box on port 25, then you should see quite a few messages in your log file.</p>
+<pre><code>netstat -t -a | grep LISTEN
+
+lsof -i tcp:25
+</code></pre>
+<h2 id="test">Test<a class="headerlink" href="#test" title="Permanent link">&para;</a></h2>
+<p>Now let&rsquo;s turn our attention to smtp-sink to find out how many messages per second your server can handle from your horrible mass mailing sofware. Postfix has to process each outgoing message even if the server on the other side throws it away (therefore, you can&rsquo;t use this to test the raw performance of your mass mailer unless you connect your mailer directly to smtp-sink).</p>
+<p>The following example sets up an SMTP listener on port 25 of localhost:</p>
+<pre><code>./smtp-sink -c localhost:25 1000
+</code></pre>
+<p>Now you can run your client tests.</p>
+<p>If you want to get an idea for how much overhead the network imposes and also get a control experiment to see what the theoretical maximum throughput for a mail server, you can make smtp-source and smtp-sink talk to each other. Open two windows. In the first, start up the dummy server like this:</p>
+<pre><code>./smtp-sink -c localhost:25 1000 100
+</code></pre>
+<p>With this in place, start throwing messages at this server with smtp-source in the other window:</p>
+<pre><code>time ./smtp-source -s 20 -l 5120 -m 100 -c -f sender@example.com -t recipient@example.com localhost:25 100
+
+real    0m0.239s
+user    0m0.000s
+sys     0m0.040s
+</code></pre>
+<h2 id="install-local-dns-server">Install Local DNS server<a class="headerlink" href="#install-local-dns-server" title="Permanent link">&para;</a></h2>
+<p>Improve domain lookup and cache</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../monitoring/" class="btn btn-neutral float-right" title="12. Monitoring">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../whitelisting/" class="btn btn-neutral" title="10. Whitelisting"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+    
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../whitelisting/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../monitoring/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script src="../js/theme.js"></script>
+
+</body>
+</html>

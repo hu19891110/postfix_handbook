@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>4. Open DMARC - Postfix - Outbound Server</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "4. Open DMARC";
+    var mkdocs_page_input_path = "opendmarc.md";
+    var mkdocs_page_url = "/opendmarc/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Postfix - Outbound Server</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">About</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../installation/">1. Installation</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../dkim_spf/">2. DKIM and SPF</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../domainkeys/">3. DomainKeys</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">4. Open DMARC</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#41-install-opendmarc-package">4.1. Install opendmarc package</a></li>
+    
+
+    <li class="toctree-l2"><a href="#42-configuration">4.2. Configuration</a></li>
+    
+
+    <li class="toctree-l2"><a href="#43-update-dns">4.3. Update DNS</a></li>
+    
+
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../bounce/">5. Bounce Management</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../rate_limiting/">6. Rate Limiting</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../ip_rotating/">7. IP Rotating</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../authentication/">8. Authentication</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../multidomain/">9. Multidomain</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../whitelisting/">10. Whitelisting</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../advanced_setup/">11. Advanced Setup</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../monitoring/">12. Monitoring</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../conclusion/">13. Conlusion and Tips</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Postfix - Outbound Server</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>4. Open DMARC</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h2 id="41-install-opendmarc-package">4.1. Install opendmarc package<a class="headerlink" href="#41-install-opendmarc-package" title="Permanent link">&para;</a></h2>
+<pre><code>apt-get install opendmarc
+</code></pre>
+<h2 id="42-configuration">4.2. Configuration<a class="headerlink" href="#42-configuration" title="Permanent link">&para;</a></h2>
+<p>Copy paste the following into a text file and save as a bash script. You can change the variable “DOMAIN”  to the one you choose depending upon the requirement.</p>
+<pre><code>DOMAIN="pronostic-facile.fr"
+mkdir /usr/local/etc/opendmarc/
+
+cat &gt; /usr/local/etc/opendmarc/ignore.hosts &lt;&lt; EOF
+${DOMAIN}
+`hostname`
+`ifconfig |grep "inet addr:"|awk '{print $2}'|cut -d: -f2|uniq`
+EOF
+
+
+cat &gt; /etc/opendmarc.conf &lt;&lt; EOF
+AuthservID HOSTNAME
+Background true
+BaseDirectory /var/run/opendmarc
+CopyFailuresTo postmaster@${DOMAIN}
+IgnoreHosts /usr/local/etc/opendmarc/ignore.hosts
+PidFile /var/run/opendmarc/opendmarc.pid
+Socket inet:8893@localhost
+Syslog false
+SyslogFacility mail
+TemporaryDirectory /var/tmp
+TrustedAuthservIDs HOSTNAME
+UserID opendmarc
+EOF
+
+postconf -e smtpd_milters="inet:localhost:8891,inet:localhost:8892,inet:localhost:8893"
+postconf -e non_smtpd_milters="inet:localhost:8891,inet:localhost:8892,inet:localhost:8893"
+
+service opendmarc restart
+service postfix restart
+</code></pre>
+<h2 id="43-update-dns">4.3. Update DNS<a class="headerlink" href="#43-update-dns" title="Permanent link">&para;</a></h2>
+<p>Publish the corresponding dns record,</p>
+<pre><code>_dmarc.pronostic-facile.fr. IN TXT "v=DMARC1;p=reject;pct=100;rua=mailto:postmaster@pronostic-facile.fr"
+</code></pre>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../bounce/" class="btn btn-neutral float-right" title="5. Bounce Management">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../domainkeys/" class="btn btn-neutral" title="3. DomainKeys"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+    
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../domainkeys/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../bounce/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script src="../js/theme.js"></script>
+
+</body>
+</html>

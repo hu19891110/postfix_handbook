@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>2. DKIM and SPF - Postfix - Outbound Server</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "2. DKIM and SPF";
+    var mkdocs_page_input_path = "dkim_spf.md";
+    var mkdocs_page_url = "/dkim_spf/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Postfix - Outbound Server</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="..">About</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../installation/">1. Installation</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">2. DKIM and SPF</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#21-install-dkim-related-packages">2.1. Install dkim related packages</a></li>
+    
+
+    <li class="toctree-l2"><a href="#22-configure-dkim">2.2. Configure DKIM</a></li>
+    
+
+    <li class="toctree-l2"><a href="#23-update-dns">2.3. Update DNS</a></li>
+    
+
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../domainkeys/">3. DomainKeys</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../opendmarc/">4. Open DMARC</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../bounce/">5. Bounce Management</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../rate_limiting/">6. Rate Limiting</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../ip_rotating/">7. IP Rotating</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../authentication/">8. Authentication</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../multidomain/">9. Multidomain</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../whitelisting/">10. Whitelisting</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../advanced_setup/">11. Advanced Setup</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../monitoring/">12. Monitoring</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../conclusion/">13. Conlusion and Tips</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Postfix - Outbound Server</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>2. DKIM and SPF</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h2 id="21-install-dkim-related-packages">2.1. Install dkim related packages<a class="headerlink" href="#21-install-dkim-related-packages" title="Permanent link">&para;</a></h2>
+<pre><code>apt-get install opendkim opendkim-tools
+</code></pre>
+<h2 id="22-configure-dkim">2.2. Configure DKIM<a class="headerlink" href="#22-configure-dkim" title="Permanent link">&para;</a></h2>
+<p>Copy paste the following into a text file and save as a bash script. You can change the variables “DOMAIN” and “SELECTOR” to the one you choose depending upon the requirement.</p>
+<pre><code>DOMAIN="pronostic-facile.fr"
+SELECTOR="default"
+
+mkdir -p /etc/opendkim/keys/${DOMAIN}
+opendkim-genkey -D /etc/opendkim/keys/${DOMAIN}/ -d ${DOMAIN} -s ${SELECTOR}
+chown -R opendkim:opendkim /etc/opendkim/keys/${DOMAIN}
+
+cat &gt; /etc/opendkim/dkim-InternalHosts.txt &lt;&lt; EOF
+${DOMAIN}
+`hostname`
+`ifconfig |grep "inet addr:"|awk '{print $2}'|cut -d: -f2|uniq`
+EOF
+
+cat &gt; /etc/opendkim.conf &lt;&lt; EOF
+PidFile                 /var/run/opendkim/opendkim.pid
+Syslog                  yes
+Domain                  ${DOMAIN}
+KeyFile                 /etc/opendkim/keys/${DOMAIN}/${SELECTOR}.private
+Selector                ${SELECTOR}
+SyslogSuccess           yes
+LogWhy                  yes
+UserID                  opendkim:opendkim
+Umask                   002
+Canonicalization        relaxed/simple
+AutoRestart             yes
+Background              yes
+DNSTimeout              10
+Mode                    sv
+SignatureAlgorithm      rsa-sha256
+SubDomains              no
+X-Header                no
+Statistics              /var/log/dkim-filter/dkim-stats
+InternalHosts          /etc/opendkim/dkim-InternalHosts.txt
+EOF
+
+cat &gt; /etc/default/opendkim &lt;&lt; EOF
+SOCKET="inet:8891@localhost"
+EOF
+
+postconf -e smtpd_milters="inet:localhost:8891"
+postconf -e non_smtpd_milters="inet:localhost:8891"
+
+service opendkim restart
+service postfix restart
+</code></pre>
+<h2 id="23-update-dns">2.3. Update DNS<a class="headerlink" href="#23-update-dns" title="Permanent link">&para;</a></h2>
+<p>Add server ip’s 144.76.113.170 &amp; 144.76.113.185 to spf record of domain. SPF and TXT records:</p>
+<pre><code>"v=spf1 A include:aspmx.googlemail.com +ip4:5.9.20.211  ip4:144.76.113.170 ip4:144.76.113.185 include:_spf.google.com include:spf.mailjet.com include:helpscoutemail.com include:mailgun.org ~all"
+</code></pre>
+<p>Publish the contents of file /etc/opendkim/keys/pronostic-facile.fr/default.txt as a TXT record in the dns of domain.</p>
+<pre><code>root@Ubuntu-1204-precise-64-minimal ~ # cat /etc/opendkim/keys/pronostic-facile.fr/default.txt
+
+default._domainkey IN TXT "v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDQIy9sM3H5n5WjaiiDnwG9iHg18y78eA0L8zyRbv3DPd6anfJ9D+kC4ypiqNBTTOBHa70tYe8pT3+4042S0QpVgnS8TaRpxxVY0rIJjnKBjrpbmCtWhcHfrcETAKxkTeXVvcDMjRRF4RA0r7mJ8hMSByGSHyxVM1VK9Ex+GBgO4QIDAQAB" ; ----- DKIM key default for pronostic-facile.fr
+
+root@Ubuntu-1204-precise-64-minimal ~ #
+</code></pre>
+<p>Ref: https://help.ubuntu.com/community/Postfix/DKIM
+http://askubuntu.com/questions/134725/setup-dkim-domainkeys-for-ubuntu-postfix-and-mailman</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../domainkeys/" class="btn btn-neutral float-right" title="3. DomainKeys">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../installation/" class="btn btn-neutral" title="1. Installation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+	  
+        </div>
+      </div>
+
+    </section>
+    
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../installation/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../domainkeys/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script src="../js/theme.js"></script>
+
+</body>
+</html>
