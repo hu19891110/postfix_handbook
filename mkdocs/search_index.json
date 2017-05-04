@@ -1,0 +1,24 @@
+{
+    "docs": [
+        {
+            "location": "/", 
+            "text": "Welcome to Postfix handbook Site\n\n\nThis documentation is a compilation of information gathered over the years to build an outgoing mail server with postfix. This is not aiming to be a all go configuration and open sourced for contribution.\n\n\nMain Sections\n\n\n\n\nmkdocs new [dir-name]\n - Create a new project.\n\n\nmkdocs serve\n - Start the live-reloading docs server.\n\n\nmkdocs build\n - Build the documentation site.\n\n\nmkdocs help\n - Print this help message.\n\n\n\n\nDisclaimer", 
+            "title": "Home"
+        }, 
+        {
+            "location": "/#welcome-to-postfix-handbook-site", 
+            "text": "This documentation is a compilation of information gathered over the years to build an outgoing mail server with postfix. This is not aiming to be a all go configuration and open sourced for contribution.", 
+            "title": "Welcome to Postfix handbook Site"
+        }, 
+        {
+            "location": "/#main-sections", 
+            "text": "mkdocs new [dir-name]  - Create a new project.  mkdocs serve  - Start the live-reloading docs server.  mkdocs build  - Build the documentation site.  mkdocs help  - Print this help message.", 
+            "title": "Main Sections"
+        }, 
+        {
+            "location": "/#disclaimer", 
+            "text": "", 
+            "title": "Disclaimer"
+        }
+    ]
+}
